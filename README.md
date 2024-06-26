@@ -1,5 +1,3 @@
-Certainly! Here's a documentation explaining how to use this ray tracing project:
-
 # Ray Tracer Project Documentation
 
 ## Overview
@@ -89,13 +87,3 @@ The rendered image will be saved as a PNG file. By default, it's named "output.p
 If you encounter issues with negative values in command-line arguments, ensure you're using the latest version of the code that includes `.allow_hyphen_values(true)` for each argument definition.
 
 If you experience any other issues or have questions, please open an issue in the project repository.
-
-## Extending the Project
-
-To add new features or modify existing ones:
-
-1. Object types: Add new structs in the `objects` module and implement the `Object` trait for them.
-2. Rendering features: Modify the `Renderer` struct in the `renderer` module.
-3. Scene composition: Adjust the scene setup in the `main` function.
-
-Remember to update this documentation if you make significant changes to the project structure or usage.
