@@ -62,13 +62,13 @@ fn main() {
         .arg(Arg::new("sphere_x")
             .long("sphere-x")
             .value_name("FLOAT")
-            .default_value("0.0")
+            .default_value("-4.0")
             .allow_hyphen_values(true)
             .help("Sphere X position"))
         .arg(Arg::new("sphere_y")
             .long("sphere-y")
             .value_name("FLOAT")
-            .default_value("0.0")
+            .default_value("-0.8")
             .allow_hyphen_values(true)
             .help("Sphere Y position"))
         .arg(Arg::new("sphere_z")
@@ -80,13 +80,13 @@ fn main() {
         .arg(Arg::new("cylinder_x")
             .long("cylinder-x")
             .value_name("FLOAT")
-            .default_value("-2.0")
+            .default_value("0.0")
             .allow_hyphen_values(true)
             .help("Cylinder X position"))
         .arg(Arg::new("cylinder_y")
             .long("cylinder-y")
             .value_name("FLOAT")
-            .default_value("0.0")
+            .default_value("-1.0")
             .allow_hyphen_values(true)
             .help("Cylinder Y position"))
         .arg(Arg::new("cylinder_z")
@@ -98,13 +98,13 @@ fn main() {
         .arg(Arg::new("cube_x")
             .long("cube-x")
             .value_name("FLOAT")
-            .default_value("1.0")
+            .default_value("4.0")
             .allow_hyphen_values(true)
             .help("Cube X position"))
         .arg(Arg::new("cube_y")
             .long("cube-y")
             .value_name("FLOAT")
-            .default_value("-0.5")
+            .default_value("-1.0")
             .allow_hyphen_values(true)
             .help("Cube Y position"))
         .arg(Arg::new("cube_z")
@@ -156,18 +156,17 @@ fn main() {
 
     let mut scene = Scene::new();
 
-    scene.add_object(Box::new(Sphere::new(Vector3D::new(sphere_x, sphere_y, sphere_z + 5.0), 1.0)));
-    scene.add_object(Box::new(Plane::new(Vector3D::new(0.0, -3.0, 0.0), Vector3D::new(0.0, 1.0, 0.0))));
+    scene.add_object(Box::new(Sphere::new(Vector3D::new(sphere_x, sphere_y + 1.0, sphere_z), 1.0)));
+    scene.add_object(Box::new(Plane::new(Vector3D::new(0.0, -1.0, 0.0), Vector3D::new(0.0, 1.0, 0.0))));
     scene.add_object(Box::new(Cylinder::new(
-    Vector3D::new(cylinder_x - 3.0, cylinder_y, cylinder_z + 5.0),
-    Vector3D::new(0.0, 1.0, 0.0),
-    0.5,
-    2.0
+        Vector3D::new(cylinder_x, cylinder_y, cylinder_z),
+        Vector3D::new(0.0, 1.0, 0.0),
+        0.5,
+        2.0
     )));
-    
     scene.add_object(Box::new(Cube::new(
-    Vector3D::new(cube_x + 3.0, cube_y, cube_z + 5.0),
-    Vector3D::new(cube_x + 4.0, cube_y + 1.0, cube_z + 6.0)
+        Vector3D::new(cube_x, cube_y, cube_z),
+        Vector3D::new(cube_x + 1.0, cube_y + 1.0, cube_z + 1.0)
     )));
 
     scene.add_light(Light::new(Vector3D::new(light_x, light_y, light_z), Color::new(1.0, 1.0, 1.0), 1.0));
@@ -182,14 +181,17 @@ fn main() {
 fn save_image(image: &[Color], width: u32, height: u32, filename: &str) {
     let mut imgbuf = ImageBuffer::new(width, height);
 
-    for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
-        let index = (y * width + x) as usize;
-        let color = &image[index];
-        *pixel = Rgb([
-            ((1.0 - color.r).min(1.0).max(0.0) * 255.0) as u8,
-            ((1.0 - color.g).min(1.0).max(0.0) * 255.0) as u8,
-            ((1.0 - color.b).min(1.0).max(0.0) * 255.0) as u8,
-        ]);
+    for y in 0..height {
+        for x in 0..width {
+            let index = ((height - 1 - y) * width + x) as usize; // Inversion des coordonnées y
+            let color = &image[index];
+            let pixel = imgbuf.get_pixel_mut(x, y);
+            *pixel = Rgb([
+                (color.r.min(1.0).max(0.0) * 255.0) as u8,
+                (color.g.min(1.0).max(0.0) * 255.0) as u8,
+                (color.b.min(1.0).max(0.0) * 255.0) as u8,
+            ]);
+        }
     }
 
     imgbuf.save(filename).expect("Failed to save image");

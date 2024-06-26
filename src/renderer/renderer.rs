@@ -21,7 +21,7 @@ impl Renderer {
         let mut image = vec![Color::new(0.0, 0.0, 0.0); (self.width * self.height) as usize];
 
         for y in 0..self.height {
-            for x in 0..self.width {
+            for x in (0..self.width).rev() {
                 let u = x as f32 / self.width as f32;
                 let v = y as f32 / self.height as f32;
                 let ray = camera.generate_ray(u, v);
@@ -65,23 +65,22 @@ impl Renderer {
     }
 
     fn shade(&self, ray: Ray, scene: &Scene, intersection: &Intersection, object: &Box<dyn Object>, depth: u32) -> Color {
-        
         let mut color = Color::new(0.1, 0.1, 0.1); // Ambient light
 
         for light in &scene.lights {
             let light_dir = (light.position - intersection.point).normalize();
-            let shadow_ray = Ray::new(intersection.point + light_dir * 0.001, light_dir);
+            let shadow_ray = Ray::new(intersection.point + light_dir * 0.1, light_dir);
 
             if !self.is_in_shadow(shadow_ray, scene, light) {
                 let normal = object.normal(&intersection.point);
-                let diffuse = normal.dot(&light_dir).max(0.0) * 0.7; // Increased from 0.5
+                let diffuse = normal.dot(&light_dir).max(0.0);
                 color = color + light.color * light.intensity * diffuse;
 
                 // Add specular highlight
                 let view_dir = (ray.origin - intersection.point).normalize();
                 let reflect_dir = light_dir - normal * 2.0 * light_dir.dot(&normal);
-                let specular = view_dir.dot(&reflect_dir).max(0.0).powf(32.0) * 0.3; // Increased from 0.2
-                color = color + light.color * light.intensity * specular;
+                let specular = view_dir.dot(&reflect_dir).max(0.0).powf(32.0);
+                color = color + light.color * light.intensity * specular * 0.5;
             }
         }
 
