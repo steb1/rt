@@ -156,6 +156,7 @@ fn main() {
 
     let mut scene = Scene::new();
 
+    
     scene.add_object(Box::new(Sphere::new(Vector3D::new(sphere_x, sphere_y + 1.0, sphere_z), 1.0)));
     scene.add_object(Box::new(Plane::new(Vector3D::new(0.0, -1.0, 0.0), Vector3D::new(0.0, 1.0, 0.0))));
     scene.add_object(Box::new(Cylinder::new(
@@ -187,7 +188,7 @@ fn save_image(image: &[Color], width: u32, height: u32, filename: &str) {
             let color = &image[index];
             let pixel = imgbuf.get_pixel_mut(x, y);
             *pixel = Rgb([
-                (color.r.min(1.0).max(0.0) * 255.0) as u8,
+                (color.r.min(1.0).max(0.0) * 100.0) as u8,
                 (color.g.min(1.0).max(0.0) * 255.0) as u8,
                 (color.b.min(1.0).max(0.0) * 255.0) as u8,
             ]);
