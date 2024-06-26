@@ -117,7 +117,7 @@ fn main() {
             .short('o')
             .long("output")
             .value_name("FILE")
-            .default_value("output.png")
+            .default_value("output.ppm")
             .help("Output file name"))
         .get_matches();
 
@@ -179,21 +179,27 @@ fn main() {
     println!("Rendering complete! Image saved as {}", output_file);
 }
 
-fn save_image(image: &[Color], width: u32, height: u32, filename: &str) {
-    let mut imgbuf = ImageBuffer::new(width, height);
+use std::fs::File;
+use std::io::Write;
 
+fn save_image(image: &[Color], width: u32, height: u32, filename: &str) {
+    let mut file = File::create(filename).expect("Failed to create file");
+
+    // Écrire l'en-tête PPM
+    writeln!(file, "P3").expect("Failed to write PPM header");
+    writeln!(file, "{} {}", width, height).expect("Failed to write dimensions");
+    writeln!(file, "255").expect("Failed to write max color value");
+
+    // Écrire les données de pixels
     for y in 0..height {
         for x in 0..width {
             let index = ((height - 1 - y) * width + x) as usize; // Inversion des coordonnées y
             let color = &image[index];
-            let pixel = imgbuf.get_pixel_mut(x, y);
-            *pixel = Rgb([
-                (color.r.min(1.0).max(0.0) * 100.0) as u8,
-                (color.g.min(1.0).max(0.0) * 255.0) as u8,
-                (color.b.min(1.0).max(0.0) * 255.0) as u8,
-            ]);
+            let r = (color.r.min(1.0).max(0.0) * 255.0) as u8;
+            let g = (color.g.min(1.0).max(0.0) * 255.0) as u8;
+            let b = (color.b.min(1.0).max(0.0) * 255.0) as u8;
+            write!(file, "{} {} {} ", r, g, b).expect("Failed to write pixel data");
         }
+        writeln!(file).expect("Failed to write newline");
     }
-
-    imgbuf.save(filename).expect("Failed to save image");
 }

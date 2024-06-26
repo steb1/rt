@@ -23,32 +23,69 @@ impl Cylinder {
 impl Object for Cylinder {
     fn intersect(&self, ray: &Ray) -> Option<Intersection> {
         let oc = ray.origin - self.center;
-        let a = ray.direction.dot(&ray.direction) - ray.direction.dot(&self.axis).powi(2);
-        let b = 2.0 * (ray.direction.dot(&oc) - ray.direction.dot(&self.axis) * oc.dot(&self.axis));
-        let c = oc.dot(&oc) - oc.dot(&self.axis).powi(2) - self.radius.powi(2);
+        let axis_dot_dir = ray.direction.dot(&self.axis);
+        let axis_dot_oc = oc.dot(&self.axis);
+
+        // Calcul des coefficients quadratiques pour la surface latérale
+        let a = ray.direction.dot(&ray.direction) - axis_dot_dir.powi(2);
+        let b = 2.0 * (ray.direction.dot(&oc) - axis_dot_dir * axis_dot_oc);
+        let c = oc.dot(&oc) - axis_dot_oc.powi(2) - self.radius.powi(2);
 
         let discriminant = b * b - 4.0 * a * c;
-        if discriminant < 0.0 {
-            return None;
+
+        let mut closest_t = f32::INFINITY;
+        let mut closest_point = Vector3D::new(0.0, 0.0, 0.0);
+        let mut closest_normal = Vector3D::new(0.0, 0.0, 0.0);
+
+        // Vérification de l'intersection avec la surface latérale
+        if discriminant >= 0.0 {
+            let sqrt_discriminant = discriminant.sqrt();
+            let t1 = (-b - sqrt_discriminant) / (2.0 * a);
+            let t2 = (-b + sqrt_discriminant) / (2.0 * a);
+
+            for &t in &[t1, t2] {
+                if t > 0.0 && t < closest_t {
+                    let point = ray.point_at(t);
+                    let height_check = (point - self.center).dot(&self.axis);
+                    if height_check >= 0.0 && height_check <= self.height {
+                        closest_t = t;
+                        closest_point = point;
+                        closest_normal = (point - (self.center + self.axis * height_check)).normalize();
+                    }
+                }
+            }
         }
 
-        let t = (-b - discriminant.sqrt()) / (2.0 * a);
-        if t <= 0.0 {
-            return None;
+        // Vérification de l'intersection avec les bases
+        let base_centers = [self.center, self.center + self.axis * self.height];
+        let base_normals = [-self.axis, self.axis];
+
+        for (&base_center, &base_normal) in base_centers.iter().zip(base_normals.iter()) {
+            let t = (base_center - ray.origin).dot(&base_normal) / ray.direction.dot(&base_normal);
+            if t > 0.0 && t < closest_t {
+                let point = ray.point_at(t);
+                if (point - base_center).magnitude() <= self.radius {
+                    closest_t = t;
+                    closest_point = point;
+                    closest_normal = base_normal;
+                }
+            }
         }
 
-        let point = ray.point_at(t);
-        let height_check = (point - self.center).dot(&self.axis);
-        if height_check < 0.0 || height_check > self.height {
-            return None;
+        if closest_t != f32::INFINITY {
+            Some(Intersection { t: closest_t, point: closest_point, normal: closest_normal })
+        } else {
+            None
         }
-
-        let normal = (point - (self.center + self.axis * height_check)).normalize();
-        Some(Intersection { t, point, normal })
     }
 
     fn normal(&self, point: &Vector3D) -> Vector3D {
         let height_check = (*point - self.center).dot(&self.axis);
+        if height_check.abs() < 1e-6 {
+            return -self.axis;
+        } else if (height_check - self.height).abs() < 1e-6 {
+            return self.axis;
+        }
         (*point - (self.center + self.axis * height_check)).normalize()
     }
 }

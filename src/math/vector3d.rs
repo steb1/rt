@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub, Mul};
+use std::ops::{Add, Sub, Mul, Neg};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Vector3D {
@@ -24,16 +24,20 @@ impl Vector3D {
         }
     }
 
+    pub fn magnitude(&self) -> f32 {
+        (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
+    }
+
     pub fn length(&self) -> f32 {
         (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
     }
 
     pub fn normalize(&self) -> Vector3D {
-        let len = self.length();
+        let mag = self.magnitude();
         Vector3D {
-            x: self.x / len,
-            y: self.y / len,
-            z: self.z / len,
+            x: self.x / mag,
+            y: self.y / mag,
+            z: self.z / mag,
         }
     }
 }
@@ -70,6 +74,18 @@ impl Mul<f32> for Vector3D {
             x: self.x * scalar,
             y: self.y * scalar,
             z: self.z * scalar,
+        }
+    }
+}
+
+impl Neg for Vector3D {
+    type Output = Vector3D;
+
+    fn neg(self) -> Vector3D {
+        Vector3D {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z,
         }
     }
 }
