@@ -1,89 +1,70 @@
-# Ray Tracer Project Documentation
+Certainly! Here's a README file that explains how to use the ray tracing program:
 
-## Overview
+```markdown
+# Ray Tracer
 
-This ray tracer is a Rust-based command-line application that generates 3D rendered images. It allows you to create scenes with various objects (spheres, planes, cylinders, and cubes) and customize their positions, as well as adjust the camera and light source positions.
+This is a simple ray tracing program that generates images of 3D scenes.
+
+## Features
+
+- Renders spheres, cubes, cylinders, and planes
+- Supports multiple light sources
+- Generates images in PPM format
+- Customizable camera and object positions
+
+## Prerequisites
+
+- Rust programming language (https://www.rust-lang.org/tools/install)
+- Cargo (Rust's package manager, typically installed with Rust)
 
 ## Installation
 
-1. Ensure you have Rust and Cargo installed on your system. If not, install them from [https://www.rust-lang.org/](https://www.rust-lang.org/).
+1. Clone this repository:
+   ```
+   git clone https://github.com/yourusername/ray-tracer.git
+   cd ray-tracer
+   ```
 
-2. Clone the repository or download the source code.
-
-3. Navigate to the project directory in your terminal.
-
-4. Build the project by running:
+2. Build the project:
    ```
    cargo build --release
    ```
 
 ## Usage
 
-To run the ray tracer, use the following command structure:
+Run the program using:
 
 ```
-cargo run --release -- [OPTIONS]
+cargo run --release
 ```
 
-### Options
+This will generate four PPM images:
 
-The ray tracer accepts the following command-line options to customize the scene:
+1. `sphere_scene.ppm`: A scene with a single sphere
+2. `plane_cube_scene.ppm`: A scene with a plane and a cube
+3. `all_objects_scene.ppm`: A scene with one of each object type (sphere, cube, cylinder, and plane)
+4. `all_objects_different_perspective.ppm`: The same scene as (3), but from a different camera angle
 
-- `--camera-x <FLOAT>`: Camera X position (default: 0.0)
-- `--camera-y <FLOAT>`: Camera Y position (default: 0.0)
-- `--camera-z <FLOAT>`: Camera Z position (default: -5.0)
-- `--light-x <FLOAT>`: Light X position (default: -5.0)
-- `--light-y <FLOAT>`: Light Y position (default: 5.0)
-- `--light-z <FLOAT>`: Light Z position (default: -5.0)
-- `--sphere-x <FLOAT>`: Sphere X position (default: 0.0)
-- `--sphere-y <FLOAT>`: Sphere Y position (default: 0.0)
-- `--sphere-z <FLOAT>`: Sphere Z position (default: 0.0)
-- `--cylinder-x <FLOAT>`: Cylinder X position (default: -2.0)
-- `--cylinder-y <FLOAT>`: Cylinder Y position (default: 0.0)
-- `--cylinder-z <FLOAT>`: Cylinder Z position (default: 0.0)
-- `--cube-x <FLOAT>`: Cube X position (default: 1.0)
-- `--cube-y <FLOAT>`: Cube Y position (default: -0.5)
-- `--cube-z <FLOAT>`: Cube Z position (default: -0.5)
-- `-o, --output <FILE>`: Output file name (default: "output.png")
+## Customizing the Scenes
 
-### Examples
+You can modify the `main.rs` file to adjust the scenes:
 
-1. Render a scene with default settings:
+- Change object positions, sizes, and properties
+- Adjust camera positions and properties
+- Modify light source positions and intensities
+
+After making changes, rebuild and run the program as described above.
+
+## Viewing the Output
+
+PPM files are not widely supported by default image viewers. You can use these methods to view the output:
+
+1. Use a PPM-compatible image viewer like GIMP or IrfanView
+2. Convert PPM to a more common format using ImageMagick:
    ```
-   cargo run --release
-   ```
-
-2. Move the sphere to position (1, 1, 1):
-   ```
-   cargo run --release -- --sphere-x 1.0 --sphere-y 1.0 --sphere-z 1.0
+   convert input.ppm output.png
    ```
 
-3. Adjust camera position and save to a custom file:
-   ```
-   cargo run --release -- --camera-x 2.0 --camera-y 1.0 --camera-z -4.0 --output my_scene.png
-   ```
+## Contributing
 
-4. Combine multiple object position changes:
-   ```
-   cargo run --release -- --sphere-x 1.0 --sphere-y 1.0 --sphere-z 1.0 --cylinder-x -1.0 --cylinder-y 0.5 --cube-x 2.0 --cube-y 0.0 --cube-z 1.0
-   ```
-
-## Scene Description
-
-The default scene consists of:
-- A sphere (radius: 1.0)
-- A plane (positioned at y = -1.0, facing upwards)
-- A cylinder (radius: 0.5, height: 2.0, oriented along the y-axis)
-- A cube (1x1x1 units in size)
-
-You can adjust the positions of these objects using the command-line options.
-
-## Output
-
-The rendered image will be saved as a PNG file. By default, it's named "output.png", but you can specify a custom name using the `--output` option.
-
-## Troubleshooting
-
-If you encounter issues with negative values in command-line arguments, ensure you're using the latest version of the code that includes `.allow_hyphen_values(true)` for each argument definition.
-
-If you experience any other issues or have questions, please open an issue in the project repository.
+Contributions are welcome! Please feel free to submit a Pull Request.
