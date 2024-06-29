@@ -21,7 +21,7 @@ This is a simple ray tracing program that generates images of 3D scenes.
 
 1. Clone this repository:
    ```
-   git clone https://github.com/yourusername/ray-tracer.git
+   git clone https://learn.zone01dakar.sn/git/lomalack/rt.git
    cd ray-tracer
    ```
 
