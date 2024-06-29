@@ -77,10 +77,10 @@ impl Renderer {
                 color = color + light.color * light.intensity * diffuse;
 
                 // Add specular highlight
-                let view_dir = (ray.origin - intersection.point).normalize();
-                let reflect_dir = light_dir - normal * 2.0 * light_dir.dot(&normal);
-                let specular = view_dir.dot(&reflect_dir).max(0.0).powf(32.0);
-                color = color + light.color * light.intensity * specular * 0.5;
+                // let view_dir = (ray.origin - intersection.point).normalize();
+                // let reflect_dir = light_dir - normal * 2.0 * light_dir.dot(&normal);
+                // let specular = view_dir.dot(&reflect_dir).max(0.0).powf(32.0);
+                // color = color + light.color * light.intensity * specular * 0.5;
             }
         }
 
